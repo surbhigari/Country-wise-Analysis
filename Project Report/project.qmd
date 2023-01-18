@@ -1,0 +1,383 @@
+---
+title : Country-Wise Analysis
+format: html
+
+---
+
+
+
+
+### Department of Mathematics & Statistics, IIT Kanpur
+
+## MTH 208 Project Report (Group - 11){.underline}
+
+
+#### Submitted To-
+
+#### Dr. Dootika Vats
+
+#### [Submitted by-]{.underline}
+
+-   \centering Vrinda Rawal
+
+-   \centering Surbhi Gari
+
+-   \centering Rahul Birru
+
+-   \centering Siddharth Pathak
+
+\pagebreak
+
+# [**Introduction**]{.underline}
+
+#### *We all have various perceptions regarding a lot of things in this world, as to how things in this world are supposed to work. For example, we assume that if population of any country increases then its unemployment rate and poverty rate are also likely to increase  or vice versa if GDP increases then poverty rate and unemployment rate are expected to fall.*
+
+
+#### *However, it is not necessary that all countries follow this same trend. So, we have tried to find some **exceptions to these perceptions**. Moreover, these variables do not just fluctuate due to a single variable but due to intricate inter-dependencies on a lot of factors.*
+
+#### *Our aim was to find some countries which stray from the expected pattern. In this project we've tried to find these using correlations among different factors like education, poverty, life expectancy etc for different countries.*
+
+# [**Motivation for doing this project**]{.underline}
+
+
+#### We started this project with the general aim of obtaining the relationships between various development indicators. We believe that these factors are inter-dependent on each other in some way or another and that is what we wanted to answer through this project. While working on this, we came across various peculiar results which we will discuss later in the report.
+
+#### Furthermore, we wanted to determine if a government's spending on the welfare of its country yields positive results.
+
+\pagebreak
+
+# [**Data**]{.underline}
+#### We’ve essentially divided our entire data in three different datasets. The very first dataset was obtained by data scraping, which contained information for 200 countries for different years. The variables included in this dataset are :
+
+-   \centering Population
+
+-   \centering Median age
+
+-   \centering Population Density
+
+-   \centering Fertility rate
+
+-   \centering Country share (in overall world's population)
+
+#### The other dataset was obtained through a combination of .csv files and using values from the first dataset. The variables in this dataset are :
+
+
+- Population
+
+- Male population
+
+- Female population
+
+- Rural population
+
+- Poverty (% of population
+living below $2.15 a day)
+
+- Mortality rate (per 1000
+births)
+
+- GDP (in US Dollars)
+
+- GPI (Gender-Parity Index)
+
+- Population density
+
+- Urban population
+
+- Life expectancy
+
+- Unemployment rate
+
+- Education (Primary education completion rate)
+
+
+#### The third and final dataset was obtained purely using .csv files. It contains information on percentage of GDP expenditure on various sectors like **military, health, education and research and development**.
+
+
+# [**Data Collection Process**]{.underline}
+
+### **Data Scraping :**
+
+#### We’ve used web scraping to retrieve a part of our data. The site that we used was Worldometer
+
+<**https://www.worldometers.info/world-population/population-by-country/**>
+
+
+#### The first dataset, as explained before, was obtained by web scraping. The data was taken from 1955 with a 5 year gap till 2015 after which it was collected on an  yearly basis. 
+
+### **.csv files**
+
+#### Some of the data that we wanted was unavailable on the Worldometer's site, so we directly extracted our data as .csv files using other sites like :
+- <**https://data.worldbank.org/**>
+
+- <**https://data.world/datasets/world**>
+
+- <**https://www.who.int/**>
+
+
+#### The second and third datasets were obtained in this manner.
+
+\pagebreak
+
+###
+# [**Challenges faced while obtaining data**]{.underline}
+
+#### While obtaining the data we faced certain challenges that took up much of our time. Some of these challenges were:
+
+#### 1. While scraping data from worldometer,we often ran into connection time out error, due to which we had to restart the entire process.
+
+#### 2. The data collected as .csv files contained a lot of NA values which were hard to deal with. We couldn't remove it as it resulted in a lot of data loss. So, we had to manually arrange some of the data through articles, websites etc. So, there was some manual work involved as well which took up a considerable amount of our time.
+
+#### 3. Another issue that we faced was scaling of the data. Many variables were in different scales. For example, GDP was in US dollars whereas unemployment and poverty rates were in percentages.
+
+\pagebreak
+
+# [**Key Questions Of Interest**]{.underline}
+
+### 1. *How are different development indicators dependent on each other and how they affect a country?*
+
+### 2. *Are there any countries that show an abnormal pattern or are deviating from the expected pattern?*
+
+### 3. *How much does a country spend in other sectors and what are its effects.*
+
+# [**Important Visualizations**]{.underline}
+
+#### Firstly, we've tried to give a visual representation of our dataset in the form of a heatmap.
+
+
+```{r output=FALSE, echo=FALSE, warning= FALSE, message = FALSE}
+library(dplyr)
+library(heatmaply)
+library(reshape2)
+library(viridis)
+library(ggplot2)
+
+```
+
+```{r echo=FALSE, warning = FALSE, message = FALSE}
+load("final_correlatedheatmap_dataset.Rdata")
+
+load("final_heatmap_dataset.Rdata")
+
+load("population_data.Rdata")
+
+load("stackedbarplotdata.Rdata")
+
+
+data <- heatm %>% 
+  dplyr::filter(country %in% c("Afghanistan","Burundi","France","China","India","Pakistan","Denmark","Zimbabwa","United States","United Kingdoms","Israel")) %>%
+  dplyr::filter(year %in% 2015) %>%
+  dplyr::arrange(country)
+
+mat <- data
+rownames(mat) <- mat[,1]
+mat <- mat %>% dplyr::select(-country, -year)
+
+heatmaply(mat,dendrogram = "none", 
+          xlab = "factors", ylab = "Countries", 
+          main = "",
+          scale = "column",
+          margins = c(60,100,40,20),
+          grid_color = "white",
+          grid_width = 0.00001,
+          titleX = FALSE,
+          hide_colorbar = FALSE,
+          branches_lwd = 0.1,
+          label_names = c("Country", "Feature:", "Value"),
+          fontsize_row = 5, fontsize_col = 5,
+          labCol = colnames(mat),
+          labRow = rownames(mat), 
+          heatmap_layers = theme(axis.line=element_blank()))
+```
+
+#### The above heatmap gives a visual representation of a **subset** of our dataset so that it is understandable. This particular heatmap is of the year 2015 for various countries like India, China, Pakistan, Israel etc. The different colours depict the individual values of factors on x axis for each country on the y axis. 
+
+#### As mentioned earlier, the data for various factors are in different scales and hence vary a lot among each other. So, we've normalised the data to absorb this variation to get the entire visualisation for all factors in a single graph. As the colorbar on the side shows, yellow represents high values whereas dark blue represents lowest values. White cells represent missing data.
+
+### 
+
+## **Correlation heatmap**
+
+```{r echo=FALSE, warning=FALSE, message = FALSE}
+data1 <- cor%>% filter(country %in% "China") %>% select(-country, -year)
+heatmaply_cor(x = cor(data1), xlab = "Features",
+              ylab = "Features", main = "China", k_col = 2, k_row = 2,grid_color = "white",
+              grid_width = 0.0000001)
+
+```
+
+#### This is a correlation heatmap for a particular country, here it is India. In this we have tried to analyse how each factor is correlated with each other and what is the strength of that relationship. This gives us an insight into how different factors are dependent on each other. For this graph we've only focused on the 2015 -- 2020 time frame as for other years there were a lot of NA values and as a result correlation couldn't be calculated.
+###
+
+## **Observations from correlation heatmaps**
+
+#### While analysing these correlation heatmaps for different countries, we came across various exceptions that go beyond our natural assumptions.
+
+#### It is a general belief that if GDP of a country increases then the unemployment rate for example will decrease. However, Japan and Pakistan show opposing qualities in this sense.
+
+#### For Japan, GDP and unemployment rates are highly negatively correlated but they are highly positively correlated for Pakistan.
+
+```{r echo=FALSE, warning = FALSE, message = FALSE}
+data1 <- cor%>% filter(country %in% "Japan") %>% select(-country, -year)
+heatmaply_cor(x = cor(data1), xlab = "Features",
+              ylab = "Features",main = "Japan", k_col = 2, k_row = 2,grid_color = "white",
+              grid_width = 0.0000001)
+
+```
+
+```{r echo=FALSE, warning=FALSE, message = FALSE}
+
+data1 <- cor%>% filter(country %in% "Pakistan") %>% select(-country, -year)
+heatmaply_cor(x = cor(data1), xlab = "Features",
+              ylab = "Features",main = "Pakistan", k_col = 2, k_row = 2,grid_color = "white",
+              grid_width = 0.0000001)
+```
+
+#### The result is also backed by these two line graphs , where you can see that as GDP of Pakistan increases, unemployment is also increasing, while for Japan, opposite is happening.
+
+```{r echo=FALSE, warning=FALSE, message = FALSE}
+
+dat <- heatm %>% filter(country %in% c("Japan","Pakistan"))
+ggplot(dat,aes(x = year,y = Unemployment)) +
+  geom_smooth(aes(col = country),se = F)+labs(x="Years",y ="Unemployment",title = "Unemployment of Japan & Pakistan ")
+```
+
+```{r echo=FALSE, warning=FALSE, message = FALSE}
+dat <- heatm %>% filter(country %in% c("Japan","Pakistan"))
+ggplot(dat,aes(x = year,y = GDP)) +
+  geom_smooth(aes(col = country),se = F)+labs(x="Years",y ="GDP",title = "GDP of Japan & Pakistan ")
+```
+
+#### One of the possible reasons for this could be the exponential increase in the population of Pakistan as compared to Japan, where GDP is not increasing at an equivalent rate as population. 
+
+```{r echo=FALSE, warning=FALSE, message = FALSE}
+dat <- heatm %>% filter(country %in% c("Japan","Pakistan"))
+ggplot(dat,aes(x = year,y =population)) +
+  geom_smooth(aes(col = country),se = F)+labs(x="Years",y ="Population",title = "Population of Japan & Pakistan ")
+```
+
+
+#### Another such belief is for unemployment and poverty rates, that they are directly related to each other. But for Mexico with a positive correlation between the two, and India with a negative relation, things are not as they seem to be. 
+
+```{r echo=FALSE, warning=FALSE, message = FALSE}
+data1 <- cor%>% filter(country %in% "India") %>% select(-country, -year)
+heatmaply_cor(x = cor(data1), xlab = "Features",
+              ylab = "Features",main = "India", k_col = 2, k_row = 2,grid_color = "white",
+              grid_width = 0.0000001)
+
+```
+
+```{r echo=FALSE, warning=FALSE, message = FALSE}
+data1 <- cor%>% filter(country %in% "Mexico") %>% select(-country, -year)
+heatmaply_cor(x = cor(data1), xlab = "Features",
+              ylab = "Features", main = "Mexico",k_col = 2, k_row = 2,grid_color = "white",
+              grid_width = 0.0000001)
+
+```
+
+#### This result is again backed by these two line graphs , where you can observe that as poverty rate of India decreases, unemployment rate is rising and the opposite is happening for Mexico.
+
+```{r echo=FALSE, warning=FALSE, message = FALSE}
+dat <- heatm %>% filter(country %in% c("India","Mexico"))
+ggplot(dat,aes(x = year,y =Unemployment)) +
+  geom_smooth(aes(col = country),se = F)+ coord_cartesian(xlim = c(2010,2020)) + labs(x="Years",y ="Unemploymnet",title = "Unemployment of India & Mexico ")
+```
+
+```{r echo=FALSE, warning=FALSE, message = FALSE}
+dat <- heatm %>% filter(country %in% c("India","Mexico"))
+ggplot(dat,aes(x = year,y =poverty)) +
+  geom_smooth(aes(col = country),se = F)+ coord_cartesian(xlim = c(2010,2020)) + labs(x="Years",y ="poverty",title = "Poverty of India & Mexico ")
+```
+
+
+#### This might be caused due to the high population and GDP of India as compared to Mexico.
+
+###
+
+#### *Moving on to the next phase of our key questions that is, does a country spending in sectors yields positive results?*
+
+###
+
+```{r echo=FALSE, warning=FALSE, message = FALSE}
+country1 <- country %>% select(-final.consumption)
+b <- country1[country1$country %in% c("Bangladesh","Colombia","Denmark","Pakistan","Philippines") & country1$Years == 2016,]
+a<-melt(b)
+ggplot(a, aes(x = country,y = value , fill = variable))+ geom_bar(position = "fill", stat = "identity") + coord_flip()+
+  labs(x="Countries", y="per_of_GDP") +
+  theme(plot.title = element_text(hjust=0.5, size=20, face='bold'))
+```
+
+
+
+
+
+```{r echo=FALSE, warning=FALSE, message = FALSE}
+dat <- heatm %>% filter(country %in% c("Bangladesh","Colombia","Denmark","Pakistan","Philippines"))
+ggplot(dat,aes(x = year,y = GDP, color = country)) +
+  geom_smooth(se = F)+labs(x="Years",y ="GDP",title = "GDP of different countries ")
+
+
+
+
+dat <- heatm %>% filter(country %in% c("Bangladesh","Colombia","Denmark","Pakistan","Philippines"))
+ggplot(dat,aes(x = year,y = Education, color = country)) +
+  geom_smooth(se = F)+labs(x="Years",y ="Education",title = "Education of different countries ")
+
+
+
+
+dat <- heatm %>% filter(country %in% c("Bangladesh","Colombia","Denmark","Pakistan","Philippines"))
+ggplot(dat,aes(x = year,y = mortality, color = country)) +
+  geom_smooth(se = F)+labs(x="Years",y ="Mortality",title = "Mortality of different countries ")
+
+
+
+```
+
+#### We can infer from these graphs that if a country is investing more in a sector then it is directly producing positive results in such sectors except for certain outliers which are getting affected by some external factors.
+
+#### The reason for choosing these particular countries is because their GDP's are almost equivalent as compared with other countries and so there are lesser chances of any discrepancies in the findings. As you can see that Denmark, Colombia, Philippines spend more % of their GDP in health than Pakistan and Bangladesh and as a result their mortality rates are also far lower than Pakistan and Bangladesh. Moreover, these countries also spend more in their education sector than the other two, which directly reflects in the education line graph above.
+
+###
+
+#### Apart from all of this, there is one interesting thing we found that we thought we should mention here.
+
+###
+
+```{r echo=FALSE, warning=FALSE, message = FALSE}
+  dat <- heatm %>% filter(country %in% c("China","India","Japan","United States"))
+ggplot(dat,aes(x = year,y = rural_population, color = country)) +
+    geom_smooth(se = F)+labs(x="Years",y ="Rural_population",title = "Rural_population of different countries ")
+```
+
+#### It was that for almost all other countries, rural population keeps on increasing with each passing year, nut for China rural population is on a steady decline. So, increase in urban population is the only contributing factor to the increase in population in China, whereas for other countries, urban and rural population both are equally contributing towards population.
+
+\pagebreak
+
+# [**Possible Biases in the data**]{.underline}
+
+#### For the correlation part of our analysis, we only looked at data from the 2015-2020 time frame due to involvement of Na values for the previous years. This might've resulted in a selection bias and may have affected the correlation values. We tried to get past this issue, but gathering data manually for all the previous years proved to be extremely difficult.
+
+# [**Conclusions**]{.underline}
+
+### *As we've seen from the graphs, the factors indeed seem to be inter-related with each other. Moreover, we cannot generalise our assumptions to all the countries as we've already seen some examples of opposing behaviours. Furthermore, a government spending money for the welfare of its country is indeed showing out to yield positive results.*
+
+# [**References**]{.underline}
+
+- <**https://www.worldometers.info/world-population/population-by-country/**>
+ 
+- <**https://data.worldbank.org/**>
+
+- <**https://data.world/datasets/world**>
+
+- <**https://www.who.int/**>
+
+- <**https://www.statista.com/**>
+
+- <**https://www.numbeo.com/**>
+
+- <**https://ourworldindata.org/**>
+
+- <**https://r-graph-gallery.com/**>
+
+
